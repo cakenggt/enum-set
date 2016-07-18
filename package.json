@@ -1,6 +1,6 @@
 {
   "name": "enum-set",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "EnumSet functionality in Javascript",
   "main": "index.js",
   "scripts": {
