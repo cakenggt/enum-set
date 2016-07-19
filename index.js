@@ -9,12 +9,12 @@ class EnumSetIterator {
   }
 
   next(){
-    while(Math.floor(this.index/32) <= this.enumSet.numList.length &&
-          (this.enumSet.numList[Math.floor(this.index/32)]&(1<<this.index%32))===0){
+    while(this.index < this.enumSet.bitVector.length &&
+          !this.enumSet.has(this.index)){
       this.index++;
     }
     let result;
-    if (this.enumSet.numList[Math.floor(this.index/32)]&(1<<this.index%32)){
+    if (this.enumSet.has(this.index)){
       if (this.IteratorKind == 'entries'){
         result = {
           value: [this.index, this.index],
@@ -41,7 +41,7 @@ class EnumSetIterator {
 
 class EnumSet {
   constructor(list){
-    this.numList = [];
+    this.bitVector = [];
     this.size = 0;
     if (list){
       for (let i = 0; i < list.length; i++){
@@ -52,11 +52,7 @@ class EnumSet {
   }
 
   has(value){
-    let index = Math.floor(value/32);
-    if (index >= this.numList.length){
-      return false;
-    }
-    return (this.numList[index]&(1<<value%32))!==0;
+    return this.bitVector[value]===true;
   }
 
   add(value){
@@ -66,25 +62,21 @@ class EnumSet {
     if (value < 0){
       throw new Error("Number cannot be less than 0");
     }
-    let index = Math.floor(value/32);
-    let numVal = this.numList[index];
-    let mask = 1<<value%32;
-    if ((numVal&mask)===0){
+    if (!this.has(value)){
       this.size++;
     }
-    this.numList[index] = numVal | mask;
+    this.bitVector[value] = true;
     return this;
   }
 
   clear(){
-    this.numList = [];
+    this.bitVector = [];
     this.size = 0;
   }
 
   delete(value){
     let ans = this.has(value);
-    let index = Math.floor(value/32);
-    this.numList[index] = this.numList[index]&~(1<<value%32);
+    this.bitVector[value] = false;
     if (ans){
       this.size--;
     }
