@@ -9,11 +9,12 @@ class EnumSetIterator {
   }
 
   next(){
-    while(this.index < 32 && this.enumSet.num&(1<<this.index)===0){
+    while(Math.floor(this.index/32) <= this.enumSet.numList.length &&
+          (this.enumSet.numList[Math.floor(this.index/32)]&(1<<this.index%32))===0){
       this.index++;
     }
     let result;
-    if (this.enumSet.num&(1<<this.index)){
+    if (this.enumSet.numList[Math.floor(this.index/32)]&(1<<this.index%32)){
       if (this.IteratorKind == 'entries'){
         result = {
           value: [this.index, this.index],
@@ -40,7 +41,7 @@ class EnumSetIterator {
 
 class EnumSet {
   constructor(list){
-    this.num = 0;
+    this.numList = [];
     this.size = 0;
     if (list){
       for (let i = 0; i < list.length; i++){
@@ -51,10 +52,11 @@ class EnumSet {
   }
 
   has(value){
-    if (value > 31){
-      throw new Error("Cannot accurately determine if number greater than 31 is in EnumSet");
+    let index = Math.floor(value/32);
+    if (index >= this.numList.length){
+      return false;
     }
-    return (this.num&(1<<value))!==0;
+    return (this.numList[index]&(1<<value%32))!==0;
   }
 
   add(value){
@@ -64,24 +66,25 @@ class EnumSet {
     if (value < 0){
       throw new Error("Number cannot be less than 0");
     }
-    if (value > 31){
-      throw new Error("Number cannot be greater than 31");
-    }
-    if ((this.num&(1<<value))===0){
+    let index = Math.floor(value/32);
+    let numVal = this.numList[index];
+    let mask = 1<<value%32;
+    if ((numVal&mask)===0){
       this.size++;
     }
-    this.num = this.num | 1<<value;
+    this.numList[index] = numVal | mask;
     return this;
   }
 
   clear(){
-    this.num = 0;
+    this.numList = [];
     this.size = 0;
   }
 
   delete(value){
     let ans = this.has(value);
-    this.num = this.num&~(1<<value);
+    let index = Math.floor(value/32);
+    this.numList[index] = this.numList[index]&~(1<<value%32);
     if (ans){
       this.size--;
     }

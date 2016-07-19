@@ -4,8 +4,6 @@ EnumSet is a library which adds a class similar to Java's EnumSet, whose purpose
 is to perform Set operations on enums faster than a normal Set would.
 
 ## Specification
-**You can only put the numbers 0-31 in an EnumSet. This class is meant for integer-represented enums!**
-
 ### EnumSet
 
 #### `size`

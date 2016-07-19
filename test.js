@@ -3,30 +3,30 @@ const expect = require('chai').expect;
 
 describe('speed tests', function(){
   it('has', function(){
-    let l = [0,1,2,3,4,5];
+    let l = generateRandomList(1000, 0.1);
     let s = new Set(l);
     let e = new EnumSet(l);
     let iterations = 10000000;
     let method = 'has';
-    expect(methodTest(s, method, iterations)).to.be.gt(methodTest(e, method, iterations));
+    expect(methodTest(s, method, iterations)).to.be.gte(methodTest(e, method, iterations));
   });
   it('add', function(){
     let s = new Set();
     let e = new EnumSet();
     let iterations = 1000000;
     let method = 'add';
-    expect(methodTest(s, method, iterations)).to.be.gt(methodTest(e, method, iterations));
+    expect(methodTest(s, method, iterations)).to.be.gte(methodTest(e, method, iterations));
   });
 });
 describe('accuracy tests', function(){
   it('has', function(){
-    let l = [0,1,2,3,4,5];
+    let l = generateRandomList(1000, 0.1);
     let s = new Set(l);
     let e = new EnumSet(l);
     fullValueTest(s, e);
   });
   it('size', function(){
-    let l = [0,1,2,3,4,5];
+    let l = generateRandomList(1000, 0.1);
     let s = new Set(l);
     let e = new EnumSet(l);
     expect(s.size).to.equal(e.size);
@@ -38,7 +38,7 @@ describe('accuracy tests', function(){
     expect(s.size).to.equal(e.size);
   });
   it('clear', function(){
-    let l = [0,1,2,3,4,5];
+    let l = generateRandomList(1000, 0.1);
     let s = new Set(l);
     let e = new EnumSet(l);
     fullValueTest(s, e);
@@ -47,7 +47,7 @@ describe('accuracy tests', function(){
     fullValueTest(s, e);
   });
   it('delete', function(){
-    let l = [0,1,2,3,4,5];
+    let l = generateRandomList(1000, 0.1);
     let s = new Set(l);
     let e = new EnumSet(l);
     expect(s.delete(1)).to.equal(e.delete(1));
@@ -56,7 +56,7 @@ describe('accuracy tests', function(){
     fullValueTest(s, e);
   });
   it('values', function(){
-    let l = [0,1,2,3,4,5];
+    let l = generateRandomList(1000, 0.1);
     let s = new Set(l).values();
     let e = new EnumSet(l).values();
     let next = s.next();
@@ -68,17 +68,30 @@ describe('accuracy tests', function(){
   });
 });
 
+function generateRandomList(x, chance){
+  let result = [];
+  if (!chance){
+    chance = 0.1;
+  }
+  for (let i = 0; i < x; i++){
+    if (Math.random() < chance){
+      result.push(i);
+    }
+  }
+  return result;
+}
+
 function methodTest(tested, method, iterations){
   let start = new Date();
   for (let i = 0; i < iterations; i++){
-    let num = Math.floor(Math.random()*31);
+    let num = Math.floor(Math.random()*1000);
     tested[method](num);
   }
   return new Date()-start;
 }
 
 function fullValueTest(s, e){
-  for (let i = 0; i < 32; i++){
+  for (let i = 0; i < 1000; i++){
     expect(s.has(i)).to.equal(e.has(i));
   }
 }
